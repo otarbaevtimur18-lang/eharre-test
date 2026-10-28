@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E Harre — Informatika Test</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#111827,#2563eb);min-height:100vh;color:#111827;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:min(760px,100%);background:#fff;border-radius:24px;padding:30px;box-shadow:0 20px 60px #0006}
+h1{text-align:center;color:#2563eb;margin-top:0}.sub{text-align:center;color:#6b7280}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:25px}
+.level{border:0;border-radius:16px;padding:20px;cursor:pointer;color:white;font-size:18px;font-weight:bold}.level small{display:block;margin-top:7px;font-size:13px;opacity:.9}
+.l1{background:#16a34a}.l2{background:#ca8a04}.l3{background:#ea580c}.l4{background:#dc2626}.l5{background:#7c3aed}
+.top{display:flex;justify-content:space-between;font-weight:bold;margin-bottom:15px}.progress{height:9px;background:#e5e7eb;border-radius:10px;overflow:hidden}.bar{height:100%;background:#2563eb;width:5%}
+.question{font-size:22px;font-weight:bold;margin:25px 0}.option{display:block;width:100%;padding:15px;margin:10px 0;border:2px solid #d1d5db;border-radius:12px;background:#f9fafb;text-align:left;font-size:16px;cursor:pointer}.option:hover,.option.selected{background:#dbeafe;border-color:#2563eb}
+.btn{width:100%;padding:15px;border:0;border-radius:12px;background:#2563eb;color:white;font-size:17px;font-weight:bold;cursor:pointer;margin-top:15px}.hidden{display:none}.result{text-align:center}.score{font-size:44px;color:#2563eb;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="card">
+<div id="home">
+<h1>🧠 E Harre</h1><p class="sub">Informatika testi — darajani tanlang</p>
+<div class="levels">
+<button class="level l1" onclick="start(1)">1-DARAJA<small>🟢 Oson</small></button>
+<button class="level l2" onclick="start(2)">2-DARAJA<small>🟡 Yengil</small></button>
+<button class="level l3" onclick="start(3)">3-DARAJA<small>🟠 O‘rtacha</small></button>
+<button class="level l4" onclick="start(4)">4-DARAJA<small>🔴 Qiyin</small></button>
+<button class="level l5" onclick="start(5)">5-DARAJA<small>🟣 Juda qiyin</small></button>
+</div>
+</div>
+
+<div id="quiz" class="hidden">
+<div class="top"><span id="count"></span><span id="timer">10:00</span></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="question" id="question"></div><div id="options"></div>
+<button class="btn" onclick="next()">Keyingi savol →</button>
+</div>
+
+<div id="result" class="hidden result">
+<h1>🎉 Natija</h1><div class="score" id="score"></div><p id="msg"></p>
+<button class="btn" onclick="location.reload()">Darajalarni ko‘rish</button>
+</div>
+</div>
+
+<script>
+const data={
+1:[
+["Kompyuterning miyasi nima?",["Monitor","Protsessor","Sichqoncha","Printer"],1],
+["1 bayt necha bit?",["4","8","16","32"],1],
+["HTML nima uchun?",["Veb-sahifa","Musiqa","Virus","Printer"],0],
+["Windows nima?",["Brauzer","Operatsion tizim","O‘yin","Rasm"],1],
+["Ctrl+C nima qiladi?",["Joylaydi","Nusxa oladi","O‘chiradi","Yopadi"],1],
+["Klaviatura nima?",["Kiritish qurilmasi","Chiqarish qurilmasi","Xotira","Tarmoq"],0],
+["Monitor vazifasi?",["Tasvir ko‘rsatish","Ovoz yozish","Matn kiritish","Internet tarqatish"],0],
+["Google Chrome nima?",["Brauzer","Windows","Virus","Printer"],0],
+["Wi-Fi nima?",["Simsiz tarmoq","Fayl","Protsessor","Monitor"],0],
+["Python nima?",["Dasturlash tili","Brauzer","Monitor","Kabel"],0],
+["Faylni saqlash buyrug‘i?",["Ctrl+S","Ctrl+C","Ctrl+V","Ctrl+X"],0],
+["RAM qanday xotira?",["Tezkor","Doimiy","Qog‘oz","Optik"],0],
+["URL nima?",["Veb-manzil","Parol","Virus","Rasm"],0],
+[".jpg odatda nima?",["Rasm","Audio","Video","Dastur"],0],
+["Algoritm nima?",["Amallar ketma-ketligi","Kompyuter","Monitor","Kabel"],0],
+["Sichqoncha nima?",["Kiritish qurilmasi","Printer","Xotira","Monitor"],0],
+["Internet nima?",["Global tarmoq","Printer","Dastur","Fayl"],0],
+["Ctrl+V nima qiladi?",["Joylaydi","Nusxa oladi","O‘chiradi","Saqlaydi"],0],
+["Antivirus nima qiladi?",["Zararli dasturlardan himoya","Rasm chizadi","Matn yozadi","Internet yaratadi"],0],
+["Paint nima uchun?",["Rasm chizish","Kod yozish","Internet","Hisoblash"],0]
+],
+2:[
+["2 ning 5-darajasi nechaga teng?",["10","25","32","64"],2],
+["1024 bayt necha KB?",["1","2","10","1024"],0],
+["CSS nima uchun?",["Dizayn","Ma’lumot saqlash","Virus","Audio"],0],
+["Binary 1010 o‘nlikda?",["8","9","10","12"],2],
+["Qaysi biri dasturlash tili?",["Python","Chrome","Windows","HTML"],0],
+["Ctrl+Z vazifasi?",["Bekor qilish","Saqlash","Nusxa","Joylash"],0],
+["IP manzil nima uchun?",["Tarmoq qurilmasini aniqlash","Rasm chizish","Audio","Matn"],0],
+["16 ning ikkilik ko‘rinishi?",["1000","1010","10000","11000"],2],
+["Algoritmning xossasi?",["Aniqlik","Tasodifiylik","Noaniqlik","Cheksizlik"],0],
+["JavaScript ko‘proq qayerda ishlatiladi?",["Veb","Printer","Monitor","Klaviatura"],0],
+["1 MB necha KB?",["100","512","1024","2048"],2],
+["ASCII nima?",["Belgilar kodlash tizimi","Brauzer","Virus","Protsessor"],0],
+["If operatori nima uchun?",["Shart tekshirish","Rasm","Ovoz","Internet"],0],
+["Loop nima?",["Takrorlash","O‘chirish","Saqlash","Chizish"],0],
+["Boolean qiymatlar?",["True/False","0/1/2","A/B/C","Red/Blue"],0],
+["LAN nima?",["Mahalliy tarmoq","Global tarmoq","Brauzer","Dastur"],0],
+["Cache nima?",["Tezkor vaqtinchalik xotira","Printer","Kabel","Monitor"],0],
+["Phishing nima?",["Soxta yo‘l bilan ma’lumot olish","Kodlash","Rasm","Video"],0],
+["Database nima?",["Ma’lumotlar bazasi","Brauzer","Printer","Virus"],0],
+[".py kengaytmasi?",["Python fayli","Rasm","Audio","Video"],0]
+],
+3:[
+["101101₂ o‘nlikda nechaga teng?",["43","45","47","49"],1],
+["Algoritm O(n) nimani bildiradi?",["Chiziqli vaqt o‘sishi","Doimiy vaqt","Kvadrat vaqt","Tasodifiy vaqt"],0],
+["Python: 3*4+2 natija?",["14","18","20","10"],0],
+["Qaysi tuzilma LIFO ishlaydi?",["Stack","Queue","Tree","Graph"],0],
+["Queue qanday ishlaydi?",["FIFO","LIFO","Random","Binary"],0],
+["Binary search qachon ishlaydi?",["Saralangan ma’lumotda","Faqat rasmda","Faqat videoda","Hech qachon"],0],
+["HTMLdagi <a> tegi?",["Havola","Rasm","Jadval","Sarlavha"],0],
+["SQL nima uchun?",["Ma’lumotlar bazasi bilan ishlash","Rasm","Audio","Operatsion tizim"],0],
+["IPV4 manzili necha bit?",["16","32","64","128"],1],
+["AND mantiqiy amalida natija 1 qachon?",["Ikkalasi ham 1","Bittasi 1","Ikkalasi 0","Har doim"],0],
+["2^10 nechaga teng?",["512","1000","1024","2048"],2],
+["Python list indeksi odatda nimadan boshlanadi?",["0","1","-1","2"],0],
+["Git nima?",["Versiya nazorati tizimi","Brauzer","Virus","Antivirus"],0],
+["Recursion nima?",["Funksiyaning o‘zini chaqirishi","Fayl o‘chirish","Tarmoq","Rasm"],0],
+["RAM o‘chirilganda ma’lumot?",["Yo‘qoladi","Saqlanadi","Internetga ketadi","Printerga chiqadi"],0],
+["DNS nima qiladi?",["Domenni IP manzilga moslaydi","Virus topadi","Rasm chizadi","Audio yozadi"],0],
+["HTTP nima?",["Veb aloqa protokoli","Rasm turi","Virus","Xotira"],0],
+["Hash funksiyasi nima beradi?",["Hash qiymat","Rasm","IP","Audio"],0],
+["Git commit nima?",["O‘zgarishlarni tarixga yozish","Faylni viruslash","Internetni o‘chirish","Monitorni yoqish"],0],
+["Graph nimadan tashkil topadi?",["Tugun va qirralardan","Faqat sonlardan","Faqat rasmlardan","Faqat matndan"],0]
+],
+4:[
+["10110110₂ o‘nlikda?",["176","182","186","190"],1],
+["O(n²) algoritm 2 baravar inputda taxminan?",["2 baravar","4 baravar","6 baravar","8 baravar"],1],
+["Dijkstra algoritmi nimani topadi?",["Eng qisqa yo‘l","Eng katta son","Saralash","Hash"],0],
+["Binary tree tugunining eng ko‘pi nechta farzandi?",["1","2","3","4"],1],
+["TCP xususiyati?",["Ishonchli yetkazish","Faqat video","Faqat Wi-Fi","Rasm format"],0],
+["Public key kriptografiyada nima ishlatiladi?",["Ochiq kalit","Faqat parol","Monitor","RAM"],0],
+["SQL JOIN nima qiladi?",["Jadvallarni bog‘laydi","Jadvalni yoqadi","Virus topadi","Kod kompilyatsiya qiladi"],0],
+["Stackda push nimani anglatadi?",["Element qo‘shish","Element olish","Saralash","O‘chirish"],0],
+["Hash table asosiy afzalligi?",["Tez qidirish","Faqat rasm","Video montaj","Printer"],0],
+["IPv6 necha bit?",["32","64","128","256"],2],
+["Compiler nima qiladi?",["Kod tarjima qiladi","Internet beradi","Rasm chizadi","Fayl siqadi"],0],
+["XOR qachon 1?",["Bitlar turlicha bo‘lsa","Ikkalasi 1","Ikkalasi 0","Har doim"],0],
+["Big-O nimani baholaydi?",["Algoritm murakkabligini","Monitor sifatini","Internet tezligini","Rasm hajmini"],0],
+["Merge sort murakkabligi?",["O(n)","O(n log n)","O(n²)","O(2ⁿ)"],1],
+["Database index nima uchun?",["Qidirishni tezlashtirish","Rasm saqlash","Internet ulash","Virus yaratish"],0],
+["API nima?",["Dasturlar o‘rtasidagi interfeys","Antivirus","Monitor","Klaviatura"],0],
+["JSON nima?",["Ma’lumot almashish formati","Virus","OS","Protsessor"],0],
+["Linux kernel nima?",["Operatsion tizim yadrosi","Brauzer","Rasm","Kabel"],0],
+["Deadlock nima?",["Jarayonlarning bir-birini kutib qolishi","Virus","Internet uzilishi","Fayl turi"],0],
+["Encryption nima?",["Ma’lumotni shifrlash","O‘chirish","Nusxa olish","Chop etish"],0]
+],
+5:[
+["Fibonacci sonlarini tez hisoblash uchun qaysi usul samarali?",["Dinamik dasturlash","Faqat rekursiya","Tasodifiy qidiruv","Bubble sort"],0],
+["Dijkstra algoritmi manfiy qirrali grafda umumiy holda?",["To‘g‘ri ishlamaydi","Har doim optimal","Faqat daraxtda ishlaydi","Faqat BFS"],0],
+["O(n log n) va O(n²) orasida katta n uchun qaysi tezroq?",["O(n log n)","O(n²)","Bir xil","Tasodifiy"],0],
+["BFS odatda qaysi tuzilma bilan amalga oshiriladi?",["Queue","Stack","Heap","Hash"],0],
+["DFS odatda qaysi tuzilma bilan amalga oshirilishi mumkin?",["Stack","Queue","Hash table","Array only"],0],
+["Binary searchning eng yomon holat murakkabligi?",["O(1)","O(log n)","O(n)","O(n²)"],1],
+["Heapda root odatda nimani bildiradi?",["Eng kichik yoki eng katta element","Har doim oxirgi element","Tasodifiy element","Hech narsa"],0],
+["Hash collision nima?",["Ikki kalit bir xil hashga tushishi","Ikki fayl o‘chishi","Internet uzilishi","Kod xatosi"],0],
+["RSA qaysi matematik g‘oyaga tayanadi?",["Katta sonlarni faktorlash qiyinligi","Rasm siqish","Binary search","DNS"],0],
+["SQL injectiondan himoyalanishning yaxshi usuli?",["Parameterized queries","Parolni ekranga chiqarish","SQLni o‘chirish","HTTPni o‘chirish"],0],
+["TCP va UDPdan qaysi biri ulanishga yo‘naltirilgan?",["TCP","UDP","Ikkalasi ham emas","DNS"],0],
+["Recursion uchun muhim shart?",["Base case","Faqat loop","Internet","SQL"],0],
+["Topological sort qaysi grafda ishlaydi?",["Yo‘naltirilgan siklsiz graf","Har qanday siklli graf","Faqat daraxt","Faqat to‘liq graf"],0],
+["Minimum spanning tree nimani minimallashtiradi?",["Qirralar umumiy og‘irligini","Tugunlar sonini","IP manzilni","Xotirani"],0],
+["A* algoritmi nimadan foydalanadi?",["Heuristika","Faqat random","Faqat hash","DNS"],0],
+["Quick sortning o‘rtacha murakkabligi?",["O(n)","O(n log n)","O(n²)","O(2ⁿ)"],1],
+["NP-complete masalalar nimaga bog‘liq?",["NP va NP-hard xususiyatlariga","Faqat HTMLga","Faqat DNSga","Faqat RAMga"],0],
+["Cache locality nimani yaxshilaydi?",["Xotiraga murojaat samaradorligini","Monitor rangini","Internet parolini","Printer tezligini"],0],
+["Mutex nima uchun?",["Umumiy resursga kirishni sinxronlash","Rasm chizish","DNS aniqlash","Fayl formatlash"],0],
+["Load balancing nima qiladi?",["Yuklamani serverlar orasida taqsimlaydi","Virusni o‘chiradi","Rasm siqadi","Parol yaratadi"],0]
+]
+};
+
+let quiz=[],i=0,correct=0,selected=null,time=600,timer;
+function start(level){
+ quiz=[...data[level]].sort(()=>Math.random()-0.5);i=0;correct=0;time=600;
+ document.getElementById("home").classList.add("hidden");document.getElementById("quiz").classList.remove("hidden");
+ clearInterval(timer);timer=setInterval(()=>{time--;showTime();if(time<=0)finish()},1000);show();
+}
+function showTime(){document.getElementById("timer").textContent=Math.floor(time/60)+":"+String(time%60).padStart(2,"0")}
+function show(){
+ selected=null;let q=quiz[i];document.getElementById("count").textContent=`Savol ${i+1} / 20`;
+ document.getElementById("bar").style.width=((i+1)*5)+"%";document.getElementById("question").textContent=q[0];
+ let box=document.getElementById("options");box.innerHTML="";
+ q[1].forEach((x,n)=>{let b=document.createElement("button");b.className="option";b.textContent=String.fromCharCode(65+n)+") "+x;b.onclick=()=>{selected=n;document.querySelectorAll(".option").forEach(z=>z.classList.remove("selected"));b.classList.add("selected")};box.appendChild(b)})
+}
+function next(){if(selected===null){alert("Javobni tanlang!");return}if(selected===quiz[i][2])correct++;i++;if(i>=20)finish();else show()}
+function finish(){clearInterval(timer);document.getElementById("quiz").classList.add("hidden");document.getElementById("result").classList.remove("hidden");document.getElementById("score").textContent=correct+" / 20";document.getElementById("msg").textContent=correct>=18?"🏆 Ajoyib!":correct>=14?"👏 Juda yaxshi!":correct>=10?"💪 Yaxshi!":"📚 Yana mashq qiling!"}
+</script>
+</body>
+</html>
